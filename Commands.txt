@@ -1,0 +1,5 @@
+# Create Resource Group
+az group create --name aks-hpa --location eastus
+
+# Create ACR
+az acr create --resource-group MyResourceGroup --name hakiatc --sku Basic
