@@ -2,4 +2,24 @@
 az group create --name aks-hpa --location eastus
 
 # Create ACR
-az acr create --resource-group MyResourceGroup --name hakiatc --sku Basic
+az acr create --resource-group aks-hpa --name akshpaacr --sku Basic
+
+# Create AKS
+az aks create -g aks-hpa -n akshpaaks --location eastus --node-count 1
+
+# Attach ACR to AKS
+az aks update -n akshpaaks -g aks-hpa --attach-acr akshpaacr 
+
+# Build and Publish image to ACR from Dockerfile
+az acr build --image php-apache --registry akshpaacr --file Dockerfile .
+
+# Create deployment and service using YAML files
+kubectl apply -f php-apache.yaml
+or 
+kubectl autoscale deployment php-apache --cpu-percent=20 --min=1 --max=5
+
+# Increase the load
+kubectl run -i --tty load-generator --rm --image=busybox --restart=Never -- /bin/sh -c "while sleep 0.01; do wget -q -o- http://php-apache; done"
+
+#Monitor the scaling
+kubectl get hpa php-apache --watch
