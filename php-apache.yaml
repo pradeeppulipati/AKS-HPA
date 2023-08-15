@@ -4,25 +4,25 @@ kind: Deployment
 metadata:
   name: php-apache
 spec:
+  replicas: 1
   selector:
-    matchlabels:
-      run: php-apache
-    replicas: 1
-    template:
-      metadata:
-        labels:
-          run: php-apache
-      spec:
-        containers:
-          - name: php-apache
-            image: akshpaacr.azurecr.io/php-apache
-            ports:
-              - containerPort: 80
-            resources:
-              limits:
-                cpu: 200m
-              requests:
-                cpu: 100m
+    matchLabels:
+      app: php-apache
+  template:
+    metadata:
+      labels:
+        app: php-apache
+    spec:
+      containers:
+        - name: php-apache
+          image: demoacrp.azurecr.io/php-apache
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              cpu: "200m"
+            requests:
+              cpu: "100m"
 ---
 apiVersion: v1
 kind: Service
